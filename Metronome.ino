@@ -32,7 +32,6 @@ int bpm = 0;
 int bpmOld = 0;
 char BPMValue[]="                          ";  //the string to print on the LCD
 char buffer[3] = {'\0', '\0', '\0'}; // input buffer
-int largeConstant = 1024; 
 
 /*
  * Keypad initialization
@@ -83,7 +82,6 @@ void metronomeOutput(int bpm, int brightness){
       clearBuffer();
       break;
     }
-
     delay(timeBetweenClicks);
   }
 }
@@ -118,8 +116,6 @@ void clearBuffer(){
   for (int i = 0; i < 3; i++) {
     buffer[i] = '\0'; // replace buffer with blank characters
   }
-  bpmOld = bpm;
-  bpm = 0;
 }
 
 /*
@@ -163,18 +159,6 @@ int processInput(char key){
 }
 
 /*
- * TODO
- */ 
-int getLargeConstant(){
-  if(largeConstant >1050){
-    largeConstant = 1024;
-  } else {
-    largeConstant++;
-  }
-  return largeConstant;
-}
-
-/*
  * setup
  */ 
 void setup(){
@@ -203,7 +187,6 @@ void loop(){
     bpmOld = bpm;
     metronomeOutput(bpm, brightness);
   }
-
 
 }
 
