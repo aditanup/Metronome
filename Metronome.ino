@@ -28,8 +28,8 @@ const int DIM_LED_OUTPUT = 2;
  * Initial values for global variables. These must be globals as they are accessed and 
  * updated in infinite loops.
  */
-int bpm = 0;
-int bpmOld = 0;
+int bpm = -1;
+int bpmOld = -1; // bpmOld should be different than bpm by default
 char BPMValue[]="                          ";  //the string to print on the LCD
 char buffer[3] = {'\0', '\0', '\0'}; // input buffer
 
@@ -110,7 +110,8 @@ int computeBrightness(int photoresistorReading){
 }
 
 /*
- * write a comment here
+ * Clears the buffer that contains detected characters.
+ * This directly leads to an update in the display. 
  */
 void clearBuffer(){
   for (int i = 0; i < 3; i++) {
@@ -135,6 +136,7 @@ int processInput(char key){
     }
     //CASE 2: submitting bpm to be output, writing the buffer content to the bpm variable
     else if(key == '#'){
+      bpmOld = bpm;
       bpm = 0;
 
       int temp = buffer[0]; // buffer input is backwards, need to reverse.
@@ -146,6 +148,15 @@ int processInput(char key){
           bpm = bpm * 10 + (buffer[i] - '0'); //convert buffer character to int, then update bpm
         }
       }
+
+      /* 
+       * This is a hotfix, but it eliminated buggy output if the user enters
+       * consecutive bpm's with equivalent values. The buggy output continues
+       * if this logic is put into the updatedOutput function.
+       */
+      if(bpmOld == bpm){
+        metronomeOutput(bpm, computeBrightness(analogRead(PHOTORESISTOR_PIN)));
+      }
     }
     //CASE 3: reading key value into the buffer
     else {
@@ -155,6 +166,25 @@ int processInput(char key){
         buffer[0] = key;
       }
     }
+  }
+}
+
+/*
+ * 
+ * Contains logic for updating display and metronome output. 
+ * Note, a hotfix was implemetned in the processInput function
+ * to deal with consecutive duplicate bpm entries. 
+ * 
+ */ 
+void updateOutput(){
+  if(bpm == bpmOld){ // updated LCD display 
+    lcd.setCursor(0,0);
+    for(int i=2; i>= 0; i--){
+      lcd.print(buffer[i]);
+    }
+  } else{
+    bpmOld = bpm;
+    metronomeOutput(bpm, computeBrightness(analogRead(PHOTORESISTOR_PIN)));
   }
 }
 
@@ -172,21 +202,7 @@ void setup(){
  * loop
  */  
 void loop(){
-  int brightness = computeBrightness(analogRead(PHOTORESISTOR_PIN));
-  char key = customKeypad.getKey();
-
-  processInput(key);
-
-  //checking if output needs to be updated
-  if(bpm == bpmOld){
-    lcd.setCursor(0,0);
-    for(int i=2; i>= 0; i--){
-      lcd.print(buffer[i]);
-    }
-  } else {
-    bpmOld = bpm;
-    metronomeOutput(bpm, brightness);
-  }
-
+  processInput(customKeypad.getKey());
+  updateOutput();
 }
 
