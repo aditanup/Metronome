@@ -3,7 +3,7 @@
 || @author Adit Anup, Srihari Das, Shashank Raghuraj
 ||
 || @description
-|| | Provides input/output functionality for a simple metronome. A numberpad is 
+|| | Provides input/output functionality for a simple metronome. A keypad is 
 || | used for input, an LED and an active buzzer are used as outputs. 
 */
 
@@ -38,7 +38,7 @@ char buffer[3] = {'\0', '\0', '\0'}; // input buffer
  */
 const byte ROWS = 4; //four rows on keyboard
 const byte COLS = 4; //four columns on keyboard
-//define the cymbols on the buttons of the keypads
+//define the symbols on the buttons of the keypads
 char hexaKeys[ROWS][COLS] = 
 {
   { '1','2','3','A'  },
@@ -120,7 +120,7 @@ void clearBuffer(){
 }
 
 /*
- * char key - the detected key from keyboad
+ * char key - the detected key from keyboard
  * 
  * Processes input based on three possible cases based on the value of key param.  
  * CASE 1: clearing buffer. 
@@ -172,7 +172,7 @@ int processInput(char key){
 /*
  * 
  * Contains logic for updating display and metronome output. 
- * Note, a hotfix was implemetned in the processInput function
+ * Note, a hotfix was implemented in the processInput function
  * to deal with consecutive duplicate bpm entries. 
  * 
  */ 
